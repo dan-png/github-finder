@@ -3,66 +3,24 @@ import githubReducer from "./GithubReducer";
 
 const GithubContext = createContext()
 
-const GITHUB_URL = process.env.REACT_APP_GITHUB_URL
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
+// const GITHUB_URL = process.env.REACT_APP_GITHUB_URL
+// const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
 
 export const GithubProvider = ({ children }) => {
   const initialState = {
-    gitUsers: [],
-    gitUser: {},
+    users: [],
+    user: {},
+    repos: [],
     loading: false,
   }
 
   const [state, dispatch] = useReducer(githubReducer, initialState)
 
 
-  // Get Search Results
-  const searchGitUsers = async (text) => {
-    setLoading()
-
-    const params = new URLSearchParams({
-      q: text
-    })
-
-    const response = await fetch(`${GITHUB_URL}/search/users?${params}`, {
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`
-      }
-    })
-
-    const { items } = await response.json()
-
-    dispatch({
-      type: 'GET_USERS',
-      payload: items,
-    })
-  }
 
 
 
-  // Get Single User
-  const getGitUser = async (login) => {
-    setLoading()
 
-    const response = await fetch(`${GITHUB_URL}/users/${login}`, {
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`
-      }
-    })
-
-    if (response.status === 404) {
-      window.location = '/notfound'
-    } else {
-      const data = await response.json()
-
-      dispatch({
-        type: 'GET_USER',
-        payload: data,
-      })
-    }
-
-
-  }
 
   // Fetch Users(For Testing Purposes)
   // const fetchGitUsers = async () => {
@@ -81,20 +39,18 @@ export const GithubProvider = ({ children }) => {
   //   })
   // }
 
-  // Clear Github Users from state
-  const clearGitUsers = () => dispatch({ type: 'CLEAR_USERS' })
+  // // Clear Github Users from state
+  // const clearGitUsers = () => dispatch({ type: 'CLEAR_USERS' })
 
-  // Set Loading
+  // // Set Loading
 
-  const setLoading = () => dispatch({ type: 'SET_LOADING' })
+  // const setLoading = () => dispatch({ type: 'SET_LOADING' })
 
   return <GithubContext.Provider value={{
-    gitUsers: state.gitUsers,
-    gitUser: state.gitUser,
-    loading: state.loading,
-    searchGitUsers,
-    getGitUser,
-    clearGitUsers,
+    ...state,
+    dispatch,
+
+
   }}>
     {children}
   </GithubContext.Provider>
